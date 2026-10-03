@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Autopilot & Job Applier Dashboard</title>
+  <link rel="stylesheet" href="styles.css?v=job-filters-delete-1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="logo-area">
+      <span class="logo-icon">🚀</span>
+      <div>
+        <h1>Autopilot Job Applier</h1>
+        <p class="subtitle">LinkedIn Easy Apply Automation with Self-Learning Memory</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btn-reviewed-excel" class="btn btn-secondary">📊 Jobs Reviewed</button>
+      <button id="btn-applied-excel" class="btn btn-secondary">✅ Jobs Applied</button>
+      <button id="btn-search-save" class="btn btn-primary">Search &amp; Save Jobs</button>
+      <button id="btn-start" class="btn btn-primary">▶️ Start Autopilot</button>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <button class="nav-item active" data-tab="tab-control">🎛️ Control Center</button>
+      <button class="nav-item" data-tab="tab-search">🔎 Search Criteria</button>
+      <button class="nav-item" data-tab="tab-profile">👤 User Profile</button>
+      <button class="nav-item" data-tab="tab-reviews">👀 Review & Approve <span id="badge-reviews" class="badge badge-warning">0</span></button>
+      <button class="nav-item" data-tab="tab-applied">📋 Applied Jobs <span id="badge-applied" class="badge">0</span></button>
+      <button class="nav-item" data-tab="tab-rejected">Rejected <span id="badge-rejected" class="badge">0</span></button>
+      <button class="nav-item" data-tab="tab-search-issues">Skipped <span id="badge-search-issues" class="badge">0</span></button>
+      <button class="nav-item" data-tab="tab-flagged">⚠️ Failed / Flagged <span id="badge-flagged" class="badge badge-warning">0</span></button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+
+      <!-- TAB 1: Control Center & Live Logs -->
+      <section id="tab-control" class="tab-content active">
+        <h2>Control Center</h2>
+        <p class="section-desc">Launch job applications, monitor real-time browser status, and view execution logs.</p>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Applied Jobs</span>
+            <span id="stat-applied-count" class="stat-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Needs Review</span>
+            <span id="stat-flagged-count" class="stat-value text-warning">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Waiting Approval</span>
+            <span id="stat-review-count" class="stat-value text-warning">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Browser Status</span>
+            <span id="stat-browser-status" class="stat-value text-success">Ready</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Current Job</span>
+            <span id="stat-current-job" class="stat-value">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Company</span>
+            <span id="stat-current-company" class="stat-value">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Current ATS</span>
+            <span id="stat-current-ats" class="stat-value">—</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Current Action</span>
+            <span id="stat-current-action" class="stat-value">Idle</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Jobs Reviewed</span>
+            <span id="stat-runtime-reviewed" class="stat-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Applications Started</span>
+            <span id="stat-runtime-started" class="stat-value">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Ready for Review</span>
+            <span id="stat-runtime-ready" class="stat-value text-warning">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Failures</span>
+            <span id="stat-runtime-failures" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <div class="console-box">
+          <div class="console-header">
+            <span>💻 Live Execution Console Stream</span>
+            <button id="btn-clear-logs" class="btn-sm">Clear Console</button>
+          </div>
+          <div id="log-output" class="console-body">
+            <div class="log-entry system">System initialized. Click "Start Autopilot" to launch applications...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Search Criteria -->
+      <section id="tab-search" class="tab-content">
+        <h2>Job Search Criteria</h2>
+        <p class="section-desc">Configure search roles, target locations, and application limits. Saved automatically.</p>
+
+        <form id="form-search" class="form-grid">
+          <div class="form-group full-width">
+            <label for="target_roles">Target Job Titles</label>
+            <div class="guided-select" data-field="target_roles">
+              <div id="target_roles_chips" class="selection-chips"></div>
+              <input type="text" id="target_roles" autocomplete="off" placeholder="Start typing, e.g. M for marketing roles">
+              <div id="target_roles_suggestions" class="suggestion-menu" role="listbox" hidden></div>
+            </div>
+            <span class="field-help">Type to search, then select one or more suggested titles.</span>
+          </div>
+          <div class="form-group full-width">
+            <label for="target_locations">Target Locations</label>
+            <div class="guided-select" data-field="target_locations">
+              <div id="target_locations_chips" class="selection-chips"></div>
+              <input type="text" id="target_locations" autocomplete="off" placeholder="Start typing a country, city, or Remote">
+              <div id="target_locations_suggestions" class="suggestion-menu" role="listbox" hidden></div>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label>Workplace Type</label>
+            <div class="checkbox-row" id="workplace_types">
+              <label><input type="checkbox" name="workplace_type" value="Remote"> Remote</label>
+              <label><input type="checkbox" name="workplace_type" value="Hybrid"> Hybrid</label>
+              <label><input type="checkbox" name="workplace_type" value="On-site"> On-site / Office</label>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label>Employment Type</label>
+            <div class="checkbox-row" id="job_types">
+              <label><input type="checkbox" name="job_type" value="Full-time"> Full-time</label>
+              <label><input type="checkbox" name="job_type" value="Part-time"> Part-time</label>
+              <label><input type="checkbox" name="job_type" value="Contract"> Contract</label>
+              <label><input type="checkbox" name="job_type" value="Temporary"> Temporary</label>
+              <label><input type="checkbox" name="job_type" value="Internship"> Internship</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="experience_years_range">Required Experience</label>
+            <select id="experience_years_range">
+              <option value="Any">Any experience</option>
+              <option value="0">No experience (0 years)</option>
+              <option value="0-2">0–2 years</option>
+              <option value="3-5">3–5 years</option>
+              <option value="6-10">6–10 years</option>
+              <option value="10+">10+ years</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="experience_level">Seniority Level</label>
+            <select id="experience_level">
+              <option value="Any">Any level</option>
+              <option value="Internship">Internship / Training</option>
+              <option value="Entry level">Entry level / Beginner</option>
+              <option value="Associate">Associate</option>
+              <option value="Mid-Senior level">Mid-Senior / Advanced</option>
+              <option value="Director">Director</option>
+              <option value="Executive">Executive</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <span class="field-help">Both modes discover Easy Apply and external jobs. Search &amp; Save saves listings only; Autopilot can open applications and pauses for approval before submitting.</span>
+          </div>
+          <div class="form-group full-width">
+            <label for="required_keywords">Must-have Keywords</label>
+            <div class="guided-select" data-field="required_keywords">
+              <div id="required_keywords_chips" class="selection-chips"></div>
+              <input type="text" id="required_keywords" autocomplete="off" placeholder="Start typing, e.g. SEO or Google">
+              <div id="required_keywords_suggestions" class="suggestion-menu" role="listbox" hidden></div>
+            </div>
+            <span class="field-help">Every listed keyword must appear in the title or job description.</span>
+          </div>
+          <div class="form-group full-width">
+            <label for="preferred_keywords">Preferred Keywords</label>
+            <div class="guided-select" data-field="preferred_keywords">
+              <div id="preferred_keywords_chips" class="selection-chips"></div>
+              <input type="text" id="preferred_keywords" autocomplete="off" placeholder="Start typing a preferred skill or technology">
+              <div id="preferred_keywords_suggestions" class="suggestion-menu" role="listbox" hidden></div>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label for="excluded_keywords">Avoid Keywords</label>
+            <div class="guided-select" data-field="excluded_keywords">
+              <div id="excluded_keywords_chips" class="selection-chips"></div>
+              <input type="text" id="excluded_keywords" autocomplete="off" placeholder="Start typing, e.g. commission or unpaid">
+              <div id="excluded_keywords_suggestions" class="suggestion-menu" role="listbox" hidden></div>
+            </div>
+            <span class="field-help">A job containing any listed term will be skipped.</span>
+          </div>
+          <div class="form-group full-width">
+            <label for="excluded_companies">Companies to Avoid (comma separated)</label>
+            <input type="text" id="excluded_companies" placeholder="e.g. Example Staffing, Example Corp">
+          </div>
+          <div class="form-group">
+            <label for="max_applications">Max Applications per Run</label>
+            <input type="number" id="max_applications" value="25" min="1" max="100">
+          </div>
+          <div class="form-group">
+            <label for="delay_sec">Delay Between Applications (seconds)</label>
+            <input type="number" id="delay_sec" value="5" min="2" max="30">
+          </div>
+          <div class="form-group full-width">
+            <button type="submit" class="btn btn-primary">💾 Save Search Criteria</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- TAB 3: User Profile & Answers -->
+      <section id="tab-profile" class="tab-content">
+        <h2>User Profile & Default Answers</h2>
+        <p class="section-desc">Your contact details and default question answers. Remembered automatically across restarts.</p>
+
+        <form id="form-profile" class="form-grid">
+          <h3>Personal Info</h3>
+          <div class="form-group">
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email">
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone">
+          </div>
+          <div class="form-group">
+            <label for="city_state">City / State</label>
+            <input type="text" id="city_state" placeholder="Example: New York, NY">
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input type="text" id="country">
+          </div>
+          <div class="form-group">
+            <label for="linkedin_url">LinkedIn Profile</label>
+            <input type="url" id="linkedin_url">
+          </div>
+          <div class="form-group">
+            <label for="portfolio_url">Portfolio</label>
+            <input type="url" id="portfolio_url">
+          </div>
+          <div class="form-group">
+            <label for="resume_upload">Resume (.pdf / .doc / .docx)</label>
+            <input type="file" id="resume_upload" accept=".pdf,.doc,.docx">
+            <button type="button" id="btn-upload-resume" class="btn btn-secondary mt-4">Upload Resume</button>
+            <span id="resume-upload-status" class="field-help">No uploaded resume selected.</span>
+            <input type="hidden" id="resume_path">
+          </div>
+
+          <h3 class="full-width mt-4">Default Form Answers</h3>
+          <div class="form-group">
+            <label for="years_exp">Years of Experience</label>
+            <select id="years_exp">
+              <option value="">Not provided</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="12">12</option>
+              <option value="15">15</option>
+              <option value="20+">20+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="work_auth">Authorized to Work?</label>
+            <select id="work_auth">
+              <option value="">Not provided</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sponsorship">Require Sponsorship?</label>
+            <select id="sponsorship">
+              <option value="">Not provided</option>
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="desired_salary">Desired Salary ($)</label>
+            <input type="text" id="desired_salary">
+          </div>
+          <div class="form-group">
+            <label for="education_level">Highest Education</label>
+            <input type="text" id="education_level">
+          </div>
+          <div class="form-group">
+            <label for="notice_period">Notice Period (weeks)</label>
+            <input type="text" id="notice_period">
+          </div>
+
+          <h3 class="full-width mt-4">Optional AI Assistance</h3>
+          <p class="section-desc full-width">Disabled by default. Browser actions stay deterministic; AI only interprets questions and enriches fit scoring.</p>
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" id="llm_enabled"> Enable optional AI</label>
+          </div>
+          <div class="form-group">
+            <label for="llm_provider">Provider</label>
+            <select id="llm_provider">
+              <option value="none">None</option>
+              <option value="lmstudio">LM Studio</option>
+              <option value="openai">OpenAI</option>
+              <option value="openai-compatible">OpenAI-compatible</option>
+              <option value="gemini">Gemini-compatible</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="llm_base_url">Base URL</label>
+            <input type="url" id="llm_base_url" placeholder="http://localhost:1234/v1">
+          </div>
+          <div class="form-group">
+            <label for="llm_model">Model</label>
+            <input type="text" id="llm_model" placeholder="Model loaded/configured by you">
+          </div>
+          <div class="form-group">
+            <label for="llm_confidence">Minimum Confidence</label>
+            <input type="number" id="llm_confidence" min="0" max="1" step="0.05" value="0.85">
+          </div>
+          <div class="form-group">
+            <label for="llm_timeout">Timeout (seconds)</label>
+            <input type="number" id="llm_timeout" min="1" max="120" value="10">
+          </div>
+          <div class="form-group full-width">
+            <button type="submit" class="btn btn-primary">💾 Save Profile</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- TAB 4: Filled applications awaiting explicit user approval -->
+      <section id="tab-reviews" class="tab-content">
+        <div class="tab-header">
+          <h2>Review & Approve Applications</h2>
+          <button id="btn-refresh-reviews" class="btn-sm">🔄 Refresh Queue</button>
+        </div>
+        <p class="section-desc">Search &amp; Save jobs are stored here for review without applying. For prepared Autopilot applications, inspect the paused form before approving or rejecting it.</p>
+
+        <div id="review-container" class="card-list">
+          <div class="empty-state">No applications are waiting for approval.</div>
+        </div>
+      </section>
+
+      <section id="tab-search-issues" class="tab-content">
+        <div class="tab-header">
+          <h2>Skipped Jobs</h2>
+          <button id="btn-refresh-search-issues" class="btn-sm">Refresh List</button>
+        </div>
+        <p class="section-desc">Automatically skipped jobs remain here until you change their status.</p>
+        <div id="search-issues-container" class="card-list"></div>
+      </section>
+
+      <!-- TAB 5: Applied Jobs History Table -->
+      <section id="tab-applied" class="tab-content">
+        <div class="tab-header">
+          <h2>Applied Jobs History</h2>
+          <button id="btn-refresh-applied" class="btn-sm">🔄 Refresh List</button>
+        </div>
+        <p class="section-desc">Submitted applications and jobs marked Applied.</p>
+
+        <div id="applied-container" class="card-list"></div>
+      </section>
+
+      <section id="tab-rejected" class="tab-content">
+        <h2>Rejected Jobs</h2>
+        <p class="section-desc">Jobs you have marked Rejected.</p>
+        <div id="rejected-container" class="card-list"></div>
+      </section>
+
+      <!-- TAB 6: Flagged Jobs Queue (Manual Review & Self-Learning) -->
+      <section id="tab-flagged" class="tab-content">
+        <h2>Failed / Flagged Jobs</h2>
+        <p class="section-desc">Jobs with unhandled questions or custom forms. Review them here, teach the software your answer, and it will handle them automatically next time!</p>
+
+        <div id="flagged-container" class="card-list">
+          <div class="empty-state">No jobs waiting for manual review. All clear! 🎉</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="app.js?v=job-filters-delete-1"></script>
+</body>
+</html>

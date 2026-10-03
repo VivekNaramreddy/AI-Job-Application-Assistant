@@ -1,0 +1,38 @@
+{
+  "job": {
+    "job_title": "Data Analyst",
+    "company": "Example Company",
+    "description": "Analyze business requirements and research commercial strategy. Requires 3 years of experience and a bachelor's degree.",
+    "job_url": "https://www.linkedin.com/jobs/view/9000000001/",
+    "external_job_id": "9000000001",
+    "location": "United States",
+    "workplace_type": "Remote",
+    "experience_level": ""
+  },
+  "preferences": {
+    "target_roles": [
+      "Business Analyst"
+    ],
+    "target_locations": [
+      "United States"
+    ],
+    "workplace_types": [
+      "Remote"
+    ],
+    "minimum_match_score": 60,
+    "require_target_title_match": true
+  },
+  "profile": {
+    "candidate_profile": {
+      "skills": [],
+      "years_of_experience": "6",
+      "education": []
+    },
+    "default_answers": {
+      "education_level": "Master's Degree"
+    },
+    "ai_settings": {
+      "enabled": false
+    }
+  }
+}
